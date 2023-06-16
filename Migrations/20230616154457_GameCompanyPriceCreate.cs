@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace GamesStoreWebApi.Migrations
 {
     /// <inheritdoc />
-    public partial class GameAndCompanyCreate : Migration
+    public partial class GameCompanyPriceCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -50,15 +50,24 @@ namespace GamesStoreWebApi.Migrations
                         principalColumn: "Id");
                 });
 
-            migrationBuilder.InsertData(
-                table: "Companies",
-                columns: new[] { "Id", "Description", "Name" },
-                values: new object[] { new Guid("2bc4964e-7836-41d3-a651-9bfb3415fd56"), null, "Blizzard Entertainment" });
-
-            migrationBuilder.InsertData(
-                table: "Games",
-                columns: new[] { "Id", "Description", "DeveloperId", "PublisherId", "ReleaseDate", "Title" },
-                values: new object[] { new Guid("b6b06368-9c93-4e8f-9d38-a2f270981211"), null, null, null, new DateTime(2016, 5, 9, 0, 0, 0, 0, DateTimeKind.Unspecified), "Stellaris" });
+            migrationBuilder.CreateTable(
+                name: "Price",
+                columns: table => new
+                {
+                    PricedGameId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "date", nullable: false, defaultValue: new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)),
+                    Value = table.Column<decimal>(type: "money", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Price", x => new { x.PricedGameId, x.StartDate });
+                    table.ForeignKey(
+                        name: "FK_Price_Games_PricedGameId",
+                        column: x => x.PricedGameId,
+                        principalTable: "Games",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Games_DeveloperId",
@@ -74,6 +83,9 @@ namespace GamesStoreWebApi.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Price");
+
             migrationBuilder.DropTable(
                 name: "Games");
 

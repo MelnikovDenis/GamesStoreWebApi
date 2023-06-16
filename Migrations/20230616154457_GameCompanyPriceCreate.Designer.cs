@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GamesStoreWebApi.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20230616120653_GameAndCompanyCreate")]
-    partial class GameAndCompanyCreate
+    [Migration("20230616154457_GameCompanyPriceCreate")]
+    partial class GameCompanyPriceCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,7 +27,7 @@ namespace GamesStoreWebApi.Migrations
 
             modelBuilder.Entity("GamesStoreWebApi.Models.Company", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -41,18 +41,11 @@ namespace GamesStoreWebApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Companies");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("2bc4964e-7836-41d3-a651-9bfb3415fd56"),
-                            Name = "Blizzard Entertainment"
-                        });
                 });
 
             modelBuilder.Entity("GamesStoreWebApi.Models.Game", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -79,14 +72,24 @@ namespace GamesStoreWebApi.Migrations
                     b.HasIndex("PublisherId");
 
                     b.ToTable("Games");
+                });
 
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("b6b06368-9c93-4e8f-9d38-a2f270981211"),
-                            ReleaseDate = new DateTime(2016, 5, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Title = "Stellaris"
-                        });
+            modelBuilder.Entity("GamesStoreWebApi.Models.Price", b =>
+                {
+                    b.Property<Guid>("PricedGameId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("StartDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("date")
+                        .HasDefaultValue(new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc));
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("money");
+
+                    b.HasKey("PricedGameId", "StartDate");
+
+                    b.ToTable("Price");
                 });
 
             modelBuilder.Entity("GamesStoreWebApi.Models.Game", b =>
@@ -104,11 +107,27 @@ namespace GamesStoreWebApi.Migrations
                     b.Navigation("Publisher");
                 });
 
+            modelBuilder.Entity("GamesStoreWebApi.Models.Price", b =>
+                {
+                    b.HasOne("GamesStoreWebApi.Models.Game", "PricedGame")
+                        .WithMany("Prices")
+                        .HasForeignKey("PricedGameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PricedGame");
+                });
+
             modelBuilder.Entity("GamesStoreWebApi.Models.Company", b =>
                 {
                     b.Navigation("DeveloperGames");
 
                     b.Navigation("PublisherGames");
+                });
+
+            modelBuilder.Entity("GamesStoreWebApi.Models.Game", b =>
+                {
+                    b.Navigation("Prices");
                 });
 #pragma warning restore 612, 618
         }

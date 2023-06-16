@@ -19,10 +19,15 @@ public class ApplicationContext : DbContext
       }
       protected override void OnModelCreating(ModelBuilder modelBuilder)
       {
+            //настройка значений по умолчанию
+            modelBuilder.Entity<Price>().Property(p => p.StartDate).HasDefaultValue(DateTime.UnixEpoch);
+
+            //настройка составных первичных ключей
+            modelBuilder.Entity<Price>().HasKey(p => new {p.PricedGameId, p.StartDate});
+
+            //настройка внешних ключей
             modelBuilder.Entity<Game>().HasOne(g => g.Developer).WithMany(d => d.DeveloperGames).HasForeignKey("DeveloperId");
             modelBuilder.Entity<Game>().HasOne(g => g.Publisher).WithMany(d => d.PublisherGames).HasForeignKey("PublisherId");
-
-            modelBuilder.Entity<Game>().HasData(new Game{Id = Guid.NewGuid(), Title = "Stellaris", ReleaseDate = new DateTime(2016, 5, 9)});
-            modelBuilder.Entity<Company>().HasData(new Company{Id = Guid.NewGuid(), Name = "Blizzard Entertainment"});
+            modelBuilder.Entity<Price>().HasOne(p => p.PricedGame).WithMany(g => g.Prices).HasForeignKey(p => p.PricedGameId);           
       }
 }

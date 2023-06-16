@@ -6,7 +6,7 @@ public class Game
 {
       [Key]
       [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-      public Guid? Id { get; set; }
+      public Guid Id { get; set; }
       [Required]
       public string Title { get; set; }
       public string? Description { get; set; }      
@@ -15,4 +15,5 @@ public class Game
       [Required]
       [Column(TypeName="date")]
       public DateTime ReleaseDate { get; set; }
+      public List<Price> Prices { get; set; }
 }
