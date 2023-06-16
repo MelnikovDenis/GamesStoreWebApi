@@ -3,9 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace GamesStoreWebApi.Models;
 
 public class Company
-{
-      [Key]
-      [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+{      
+      [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
       public Guid Id { get; set; }
       [Required]
       public string Name { get; set; }
