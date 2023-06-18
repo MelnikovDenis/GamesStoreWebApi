@@ -13,6 +13,7 @@ public class Game
       public Company? Developer { get; set; }      
       [Column(TypeName="date"), Required]
       public DateTime ReleaseDate { get; set; }
-      public List<Price> Prices { get; set; }
-      public List<Discount> Discounts { get; set; }
+      public List<Price>? Prices { get; set; } 
+      public List<Discount>? Discounts { get; set; } 
+      public List<Collection>? Collections { get; set; } 
 }
