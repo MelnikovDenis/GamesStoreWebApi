@@ -42,5 +42,8 @@ public class ApplicationContext : IdentityDbContext<ApplicationUser, IdentityRol
             modelBuilder.Entity<Collection>().HasOne(c => c.Collectioner).WithMany(u => u.Collections).HasForeignKey(c => c.CollectionerId);
             modelBuilder.Entity<Collection>().HasOne(c => c.CollectionedGame).WithMany(g => g.Collections).HasForeignKey(c => c.CollectionedGameId);
             modelBuilder.Entity<Collection>().HasOne(c => c.Type).WithMany(t => t.Collections).HasForeignKey(c => c.TypeId);
+            modelBuilder.Entity<Purchase>().HasOne(p => p.Purchaser).WithMany(u => u.Purchases).HasForeignKey("PurchaserId");
+            modelBuilder.Entity<Key>().HasOne(k => k.KeyPurchase).WithMany(p => p.Keys).HasForeignKey("PurchaseId");
+            modelBuilder.Entity<Key>().HasOne(k => k.KeyGame).WithMany(g => g.Keys).HasForeignKey("GameId");
       }
 }

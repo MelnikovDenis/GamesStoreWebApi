@@ -4,6 +4,7 @@ using GamesStoreWebApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GamesStoreWebApi.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20230618164241_PurchaseCreate")]
+    partial class PurchaseCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -191,27 +194,6 @@ namespace GamesStoreWebApi.Migrations
                     b.HasIndex("PublisherId");
 
                     b.ToTable("Games");
-                });
-
-            modelBuilder.Entity("GamesStoreWebApi.Models.Key", b =>
-                {
-                    b.Property<Guid>("KeyId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("GameId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("PurchaseId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("KeyId");
-
-                    b.HasIndex("GameId");
-
-                    b.HasIndex("PurchaseId");
-
-                    b.ToTable("Key");
                 });
 
             modelBuilder.Entity("GamesStoreWebApi.Models.Price", b =>
@@ -439,23 +421,6 @@ namespace GamesStoreWebApi.Migrations
                     b.Navigation("Publisher");
                 });
 
-            modelBuilder.Entity("GamesStoreWebApi.Models.Key", b =>
-                {
-                    b.HasOne("GamesStoreWebApi.Models.Game", "KeyGame")
-                        .WithMany("Keys")
-                        .HasForeignKey("GameId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("GamesStoreWebApi.Models.Purchase", "KeyPurchase")
-                        .WithMany("Keys")
-                        .HasForeignKey("PurchaseId");
-
-                    b.Navigation("KeyGame");
-
-                    b.Navigation("KeyPurchase");
-                });
-
             modelBuilder.Entity("GamesStoreWebApi.Models.Price", b =>
                 {
                     b.HasOne("GamesStoreWebApi.Models.Game", "PricedGame")
@@ -554,14 +519,7 @@ namespace GamesStoreWebApi.Migrations
 
                     b.Navigation("Discounts");
 
-                    b.Navigation("Keys");
-
                     b.Navigation("Prices");
-                });
-
-            modelBuilder.Entity("GamesStoreWebApi.Models.Purchase", b =>
-                {
-                    b.Navigation("Keys");
                 });
 #pragma warning restore 612, 618
         }

@@ -16,4 +16,5 @@ public class Game
       public List<Price>? Prices { get; set; } 
       public List<Discount>? Discounts { get; set; } 
       public List<Collection>? Collections { get; set; } 
+      public List<Key>? Keys { get; set; }
 }
