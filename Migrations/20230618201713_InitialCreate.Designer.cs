@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GamesStoreWebApi.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20230618193821_KeyCreate")]
-    partial class KeyCreate
+    [Migration("20230618201713_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
