@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using GamesStoreWebApi.Models;
-
+using GamesStoreWebApi.Models.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,14 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace GamesStoreWebApi.Models;
-
-public class Company
+[Table("CollectionTypes")]
+public class CollectionType
 {      
       [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
       public Guid Id { get; set; }
       [Required]
-      public string Name { get; set; }
-      public string? Description { get; set; }
-      public List<Game>? PublisherGames { get; set; }
-      public List<Game>? DeveloperGames { get; set; }
+      public string Type { get; set; }
+      public List<Collection>? Collections { get; set; }
 }
