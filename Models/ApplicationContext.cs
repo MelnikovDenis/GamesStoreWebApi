@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using GamesStoreWebApi.Models.Entities;
+
 namespace GamesStoreWebApi.Models;
 public class ApplicationContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
 {
