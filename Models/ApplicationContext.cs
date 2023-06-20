@@ -24,6 +24,7 @@ public class ApplicationContext : IdentityDbContext<ApplicationUser, IdentityRol
         builder.AddJsonFile("appsettings.Development.json");
         var config = builder.Build();
         optionsBuilder.UseSqlServer(config.GetConnectionString("DefaultConnection"));
+        optionsBuilder.LogTo(message => Console.WriteLine(message));
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

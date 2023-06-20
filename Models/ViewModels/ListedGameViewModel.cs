@@ -1,16 +1,25 @@
 ﻿namespace GamesStoreWebApi.Models.ViewModels;
 
-public class ListGameViewModel
+public class ListedGameViewModel
 {
     public Guid Id { get; set; }
     public string Title { get; set; }
     public string? Description { get; set; }
     public string? PublisherName { get; set; }
     public string? DeveloperName { get; set; }
-    public DateTime ReleaseDate { get; set; }
+    public DateOnly ReleaseDate { get; set; }
     public decimal CurrentPrice { get; set; }
     public decimal? CurrentDiscount { get; set; }
-    public ListGameViewModel(Guid id, string title, string? description, string? publisherName, string? developerName, DateTime releaseDate, decimal currentPrice, decimal? currentDiscount)
+    public int KeyCount { get; set; }
+    public ListedGameViewModel(Guid id, 
+        string title, 
+        string? description, 
+        string? publisherName, 
+        string? developerName, 
+        DateOnly releaseDate, 
+        decimal currentPrice, 
+        decimal? currentDiscount, 
+        int keyCount)
     {
         Id = id;
         Title = title;
@@ -20,5 +29,6 @@ public class ListGameViewModel
         ReleaseDate = releaseDate;
         CurrentPrice = currentPrice;
         CurrentDiscount = currentDiscount;
+        KeyCount = keyCount;
     }
 }
