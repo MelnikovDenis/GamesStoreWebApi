@@ -6,6 +6,10 @@ namespace GamesStoreWebApi.Models.Persistence;
 public class GamesRepository : IGamesRepository
 { 
     private ApplicationContext _context { get; set; }   
+    public int Count { get {
+            return _context.Games.AsNoTracking().Count();
+        } 
+    }
     public GamesRepository(ApplicationContext context) 
     {
         _context = context;
@@ -18,6 +22,7 @@ public class GamesRepository : IGamesRepository
             .Include(g => g.Prices)
             .Include(g => g.Discounts)
             .Include(g => g.Keys)
+            .AsNoTracking()
             .AsQueryable<Game>();
     }
 }

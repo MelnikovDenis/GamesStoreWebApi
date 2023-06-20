@@ -3,5 +3,6 @@
 namespace GamesStoreWebApi.Models.Persistence;
 public interface IGamesRepository
 {
+    public int Count { get; }
     public IQueryable<Game> GetGames();
 }
