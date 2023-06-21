@@ -1,9 +1,9 @@
 ﻿using GamesStoreWebApi.Models.Entities;
 
-namespace GamesStoreWebApi.Models.Persistence;
+namespace GamesStoreWebApi.Models.Persistence.Abstractions;
 public interface IGamesRepository
 {
     public int Count { get; }
     public IQueryable<Game> GetGames();
-    public Game? GetGame(Guid id);
+    public void CreateGame(Game game);
 }

@@ -1,8 +1,7 @@
-using GamesStoreWebApi.Models.Persistence;
 using GamesStoreWebApi.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
 using GamesStoreWebApi.Models.ViewModels;
-using Microsoft.VisualBasic;
+using GamesStoreWebApi.Models.Persistence.Abstractions;
 
 namespace GamesStoreWebApi.Controllers;
 
@@ -11,9 +10,11 @@ namespace GamesStoreWebApi.Controllers;
 public class HomeController : ControllerBase
 {
     private IGamesRepository GamesRepository { get; set; }
-    public HomeController(IGamesRepository gamesRepository)
+    private ICompaniesRepository CompaniesRepository { get; set; }
+    public HomeController(IGamesRepository gamesRepository, ICompaniesRepository companyRepository)
     {
         GamesRepository = gamesRepository;
+        CompaniesRepository = companyRepository;
     }
 
     [HttpGet, Route("GetGameListPage")]
@@ -24,22 +25,22 @@ public class HomeController : ControllerBase
         {
             var pageInfo = new PageViewModel(count, pageSize, pageNumber);
             var gamesViewModel = (from game in GamesRepository.GetGames()
-                         select new ListedGameViewModel(
-                                game.Id,
-                                game.Title,
-                                game.Description,
-                                (game.Publisher != null ? game.Publisher!.Name : null),
-                                (game.Developer != null ? game.Developer!.Name : null),
-                                DateOnly.FromDateTime(game.ReleaseDate),
-                                (from price in game.Prices where price.StartDate == game.Prices!.Max(p => p.StartDate) select price.Value).FirstOrDefault(),
-                                (from discount in game.Discounts where discount.StartDate == game.Discounts!.Max(p => p.StartDate) && discount.EndDate > DateTime.Today select discount.Percent).FirstOrDefault(),
-                                (game.Keys != null ? game.Keys.Count() : 0)
-                             )
+                select new ListedGameViewModel(
+                    game.Id,
+                    game.Title,
+                    game.Description,
+                    (game.Publisher != null ? game.Publisher!.Name : null),
+                    (game.Developer != null ? game.Developer!.Name : null),
+                    DateOnly.FromDateTime(game.ReleaseDate),
+                    (from price in game.Prices where price.StartDate == game.Prices!.Max(p => p.StartDate) select price.Value).FirstOrDefault(),
+                    (from discount in game.Discounts where discount.StartDate == game.Discounts!.Max(p => p.StartDate) && discount.EndDate > DateTime.Today select discount.Percent).FirstOrDefault(),
+                    (game.Keys != null ? game.Keys.Count() : 0)
+                    )
                  )
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
-            return Ok(new GamePageViewModel(gamesViewModel, pageInfo));
+            return Ok(new  ListedTPageViewModel<ListedGameViewModel>(gamesViewModel, pageInfo));
         }
         else 
         {
@@ -49,7 +50,7 @@ public class HomeController : ControllerBase
     [HttpGet, Route("GetGame")]
     public IActionResult GetGame(Guid id) 
     {
-        var game = GamesRepository.GetGame(id);
+        var game = GamesRepository.GetGames().FirstOrDefault(g => g.Id == id);
         if(game is not null) 
         {
             var startHistory = DateTime.Today.AddMonths(-6);
@@ -77,7 +78,49 @@ public class HomeController : ControllerBase
         }
         else 
         {
-            return BadRequest("Incorrect Id");
+            return BadRequest("Incorrect id");
         }
+    }
+    [HttpPost, Route("CreateGame")]
+    public IActionResult CreateGame(CreateGameViewModel createGame) 
+    {
+        Company? publisher = null;
+        Company? developer = null;
+        if (createGame.PublisherId is not null) 
+        {
+            publisher = GetCompanyByGuid((Guid)createGame.PublisherId);
+            if(publisher is null) 
+            {
+                return BadRequest("Incorrect PublisherId");
+            }
+        }
+        if (createGame.DeveloperId is not null)
+        {
+            developer = GetCompanyByGuid((Guid)createGame.DeveloperId);
+            if (developer is null)
+            {
+                return BadRequest("Incorrect DeveloperId");
+            }
+        }
+        Guid guid = Guid.NewGuid();
+        var game = new Game
+        {
+            Id = guid,
+            Title = createGame.Title,
+            Description = createGame.Description,
+            Publisher = publisher,
+            Developer = developer,
+            ReleaseDate = createGame.ReleaseDate.ToDateTime(TimeOnly.MinValue),
+            Prices = new List<Price>() { new Price { PricedGameId = guid, Value = createGame.StartPrice } },
+            
+        };
+        var keys = from keyId in createGame.Keys select new Key { KeyId = keyId, KeyGame = game };
+        game.Keys = keys.ToList();
+        GamesRepository.CreateGame(game);
+        return RedirectToActionPermanent("GetGame", new {id = guid});
+    }
+    private Company? GetCompanyByGuid(Guid id) 
+    {
+        return CompaniesRepository.GetCompanies().FirstOrDefault(c => c.Id == id);
     }
 }
