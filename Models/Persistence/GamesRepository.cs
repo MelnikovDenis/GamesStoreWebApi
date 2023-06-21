@@ -25,4 +25,15 @@ public class GamesRepository : IGamesRepository
             .AsNoTracking()
             .AsQueryable<Game>();
     }
+    public Game? GetGame(Guid id) 
+    {
+        return _context.Games
+            .Include(g => g.Publisher)
+            .Include(g => g.Developer)
+            .Include(g => g.Prices)
+            .Include(g => g.Discounts)
+            .Include(g => g.Keys)
+            .AsNoTracking()
+            .First(g => g.Id == id);
+    }
 }

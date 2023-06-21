@@ -5,4 +5,5 @@ public interface IGamesRepository
 {
     public int Count { get; }
     public IQueryable<Game> GetGames();
+    public Game? GetGame(Guid id);
 }
