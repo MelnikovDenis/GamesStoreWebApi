@@ -46,7 +46,11 @@ public class EfGameRepository : IGenericRepository<Game>
         _context.Games.Add(game);
         await _context.SaveChangesAsync();
     }
-    public async Task Update(Game game) { throw  new NotImplementedException(); }
+    public async Task Update(Game game)
+    {
+        _context.Games.Update(game);
+        await _context.SaveChangesAsync();
+    }
     public async Task Delete(Game game) 
     {
         _context.Games.Remove(game);

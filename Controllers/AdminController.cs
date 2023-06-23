@@ -1,9 +1,7 @@
 ﻿using GamesStoreWebApi.Models.Entities;
 using GamesStoreWebApi.Models.Persistence.Abstractions;
-using GamesStoreWebApi.Models.Persistence.Implementations;
 using GamesStoreWebApi.Models.ViewModels.FromView;
 using GamesStoreWebApi.Models.ViewModels.ToView;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GamesStoreWebApi.Controllers
@@ -40,13 +38,25 @@ namespace GamesStoreWebApi.Controllers
             await GameRepository.Create(game);
             return RedirectToActionPermanent("GetGame", "Home", new { id = id });
         }
-        [HttpPost, Route("DeleteGame")]
+        [HttpDelete, Route("DeleteGame")]
         public async Task<IActionResult> DeleteGame(Guid id) 
         {
             var game = await GameRepository.GetById(id);
             var gameDetailedViewModel = DetailedGameViewModel.FromGame(game);
             await GameRepository.Delete(game);
             return Ok(gameDetailedViewModel);
+        }
+        [HttpPut, Route("UpdateGame")]
+        public async Task<IActionResult> UpdateGame(UpdateGameViewModel updateGame) 
+        {
+            var game = await GameRepository.GetById(updateGame.Id);
+            game.Title = updateGame.Title;
+            game.Description = updateGame.Description;
+            game.Publisher = updateGame.PublisherId is not null ? await CompanyRepository.GetById((Guid)updateGame.PublisherId) : null;
+            game.Developer = updateGame.DeveloperId is not null ? await CompanyRepository.GetById((Guid)updateGame.DeveloperId) : null;
+            game.ReleaseDate = updateGame.ReleaseDate.ToDateTime(TimeOnly.MinValue);
+            await GameRepository.Update(game);
+            return RedirectToActionPermanent("GetGame", "Home", new { id = updateGame.Id });
         }
     }
 }

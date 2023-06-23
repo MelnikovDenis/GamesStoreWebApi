@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GamesStoreWebApi.Models.Persistence.Abstractions;
 using GamesStoreWebApi.Models.ViewModels.ToView;
-using GamesStoreWebApi.Models.ViewModels.FromView;
 
 namespace GamesStoreWebApi.Controllers;
 
@@ -12,11 +11,9 @@ namespace GamesStoreWebApi.Controllers;
 public class HomeController : ControllerBase
 {
     private IGenericRepository<Game> GameRepository { get; set; }
-    private IGenericRepository<Company> CompanyRepository { get; set; }
-    public HomeController(IGenericRepository<Game> gameRepository, IGenericRepository<Company> companyRepository)
+    public HomeController(IGenericRepository<Game> gameRepository)
     {
         GameRepository = gameRepository;
-        CompanyRepository = companyRepository;
     }
 
     [HttpGet, Route("GetGamesPage")]
