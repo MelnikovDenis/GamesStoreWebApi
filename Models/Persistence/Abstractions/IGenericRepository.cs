@@ -6,5 +6,5 @@ public interface IGenericRepository<TEntity> where TEntity : class
     public Task<TEntity> GetById(Guid id);
     public Task Create(TEntity entity);
     public Task Update(TEntity entity);
-    public Task Delete(Guid id);
+    public Task Delete(TEntity entity);
 }

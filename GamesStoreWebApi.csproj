@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <Folder Include="Exceptions\" />
+    <Folder Include="Infrastructure\Services\" />
     <Folder Include="Models\ViewModels\Shared\" />
   </ItemGroup>
 
