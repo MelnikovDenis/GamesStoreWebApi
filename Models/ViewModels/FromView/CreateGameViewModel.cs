@@ -1,4 +1,4 @@
-﻿namespace GamesStoreWebApi.Models.ViewModels;
+﻿namespace GamesStoreWebApi.Models.ViewModels.FromView;
 public record class CreateGameViewModel(
     string Title,
     string? Description,

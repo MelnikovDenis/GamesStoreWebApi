@@ -1,5 +1,5 @@
-﻿namespace GamesStoreWebApi.Models.ViewModels;
-public record class ListedGameViewModel(Guid Id,
+﻿namespace GamesStoreWebApi.Models.ViewModels.ToView;
+public record class SuperficialGameViewModel(Guid Id,
     string Title,
     string? Description,
     string? PublisherName,
