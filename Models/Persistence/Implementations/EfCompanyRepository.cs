@@ -1,6 +1,7 @@
 ﻿using GamesStoreWebApi.Models.Persistence.Abstractions;
 using GamesStoreWebApi.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using GamesStoreWebApi.Exceptions;
 
 namespace GamesStoreWebApi.Models.Persistence.Implementations;
 
@@ -28,8 +29,8 @@ public class EfCompanyRepository : IGenericRepository<Company>
             .Include(c => c.PublisherGames)
             .Include(c => c.DeveloperGames)
             .FirstOrDefaultAsync(c => c.Id == id);
-        if(company is null)
-            throw new ArgumentOutOfRangeException("Invalid id");
+        if (company is null)
+            throw new ItemNotFoundException();
         return company;
     }
     public async Task Delete(Company company) { throw new NotImplementedException(); }

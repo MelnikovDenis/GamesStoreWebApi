@@ -1,4 +1,5 @@
-﻿using GamesStoreWebApi.Models.Entities;
+﻿using GamesStoreWebApi.Exceptions;
+using GamesStoreWebApi.Models.Entities;
 using GamesStoreWebApi.Models.Persistence.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
@@ -37,7 +38,7 @@ public class EfGameRepository : IGenericRepository<Game>
             .Include(g => g.Collections)
             .FirstOrDefaultAsync(g => g.Id == id);
         if(game is null)
-            throw new ArgumentOutOfRangeException("Invalid id");
+            throw new ItemNotFoundException();
         return game;
     }
 

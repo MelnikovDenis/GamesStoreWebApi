@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using GamesStoreWebApi.Exceptions;
+using System.Net;
 using System.Text.Json;
 namespace GamesStoreWebApi.Infrastructure.Middleware;
 
@@ -23,11 +24,19 @@ public class ExceptionHandlerMiddleware
         }
     }
     private static Task HandleExceptionMessageAsync(HttpContext context, Exception exception)
-    {       
-        int statusCode = (int)HttpStatusCode.InternalServerError;
+    {
+        int statusCode;
+        if(exception is WebApiException)
+        {
+            var webApiException = (WebApiException)exception;
+            statusCode = (int)(webApiException.StatusCode);
+        }
+        else 
+        {
+            statusCode = (int)HttpStatusCode.InternalServerError;
+        }       
         var result = JsonSerializer.Serialize(new
         {
-            StatusCode = statusCode,
             ErrorMessage = exception.Message
         });
         context.Response.ContentType = "application/json";
