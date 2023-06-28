@@ -1,2 +1,2 @@
 ﻿namespace GamesStoreWebApi.Models.ViewModels.ToView;
-public record class CompanyViewModel(Guid id, string Name, string? Description);
+public record class CompanyViewModel(Guid Id, string Name, string? Description);

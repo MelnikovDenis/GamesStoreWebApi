@@ -3,6 +3,7 @@ using GamesStoreWebApi.Models.Persistence.Abstractions;
 using GamesStoreWebApi.Models.ViewModels.FromView;
 using GamesStoreWebApi.Models.ViewModels.ToView;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace GamesStoreWebApi.Controllers
 {
@@ -18,7 +19,65 @@ namespace GamesStoreWebApi.Controllers
             GameRepository = gameRepository;
             CompanyRepository = companyRepository;
         }
-
-        
+        [HttpGet, Route("GetPage")]
+        public async Task<IActionResult> GetPage(int pageSize, int pageNumber = 1)
+        {
+            var pageInfo = new PageInfoViewModel(await GameRepository.Count(), pageSize, pageNumber);
+            var companies = await (from company in CompanyRepository.Get()
+                select new CompanyViewModel(
+                    company.Id, 
+                    company.Name,
+                    company.Description
+                )
+            )
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+            return Ok(new GenericPageViewModel<CompanyViewModel>(companies, pageInfo));
+        }
+        [HttpGet, Route("GetById")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var company = await CompanyRepository.GetById(id);
+            return Ok(new CompanyViewModel(
+                    company.Id,
+                    company.Name,
+                    company.Description
+                )
+            );
+        }
+        [HttpPost, Route("Create")]
+        public async Task<IActionResult> Create(CreateCompanyViewModel createCompany)
+        {
+            Guid id = Guid.NewGuid();
+            var company = new Company
+            {
+                Id = id,
+                Name = createCompany.Name,
+                Description = createCompany.Description
+            };
+            await CompanyRepository.Create(company);
+            var companyViewModel = new CompanyViewModel(company.Id, company.Name, company.Description);
+            return Ok(companyViewModel);
+        }
+        [HttpDelete, Route("Delete")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var company = await CompanyRepository.GetById(id);
+            var companyViewModel = new CompanyViewModel(company.Id, company.Name, company.Description);
+            await CompanyRepository.Delete(company);
+            return Ok(companyViewModel);
+        }
+        [HttpPut, Route("Update")]
+        public async Task<IActionResult> Update(CompanyViewModel updateCompany)
+        {
+            var company = await CompanyRepository.GetById(updateCompany.Id);
+            company.Name = updateCompany.Name;
+            company.Description = updateCompany.Description;          
+            await CompanyRepository.Update(company);
+            var companyViewModel = new CompanyViewModel(company.Id, company.Name, company.Description);
+            return Ok(companyViewModel);
+        }
     }
+        
 }

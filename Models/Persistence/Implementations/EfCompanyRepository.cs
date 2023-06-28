@@ -33,7 +33,19 @@ public class EfCompanyRepository : IGenericRepository<Company>
             throw new ItemNotFoundException();
         return company;
     }
-    public async Task Delete(Company company) { throw new NotImplementedException(); }
-    public async Task Update(Company company) { throw new NotImplementedException(); }
-    public async Task Create(Company company) { throw new NotImplementedException(); }
+    public async Task Delete(Company company) 
+    { 
+        _context.Companies.Remove(company);
+        await _context.SaveChangesAsync();
+    }
+    public async Task Update(Company company) 
+    { 
+        _context.Companies.Update(company);
+        await _context.SaveChangesAsync();
+    }
+    public async Task Create(Company company) 
+    {
+        _context.Companies.Add(company);
+        await _context.SaveChangesAsync();
+    }
 }

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GamesStoreWebApi.Models.Persistence.Abstractions;
 using GamesStoreWebApi.Models.ViewModels.ToView;
-using GamesStoreWebApi.Models.Persistence.Implementations;
 using GamesStoreWebApi.Models.ViewModels.FromView;
 
 namespace GamesStoreWebApi.Controllers;
@@ -23,19 +22,9 @@ public class GameController : ControllerBase
     [HttpGet, Route("GetPage")]
     public async Task<IActionResult> GetPage(int pageSize, int pageNumber = 1)
     {
-        var pageInfo = new PageViewModel(await GameRepository.Count(), pageSize, pageNumber);
+        var pageInfo = new PageInfoViewModel(await GameRepository.Count(), pageSize, pageNumber);
         var games = await (from game in GameRepository.Get() 
-            select new SuperficialGameViewModel(
-                game.Id,
-                game.Title,
-                game.Description,
-                (game.Publisher != null ? game.Publisher!.Name : null),
-                (game.Developer != null ? game.Developer!.Name : null),
-                DateOnly.FromDateTime(game.ReleaseDate),
-                (from price in game.Prices where price.StartDate == game.Prices!.Max(p => p.StartDate) select price.Value).FirstOrDefault(),
-                (from discount in game.Discounts where discount.StartDate == game.Discounts!.Max(p => p.StartDate) && discount.EndDate > DateTime.Today select discount.Percent).FirstOrDefault(),
-                (game.Keys != null ? game.Keys.Count() : 0)
-            )
+            select SuperficialGameViewModel.FromGame(game)
         )
         .Skip((pageNumber - 1) * pageSize)
         .Take(pageSize)
@@ -65,7 +54,8 @@ public class GameController : ControllerBase
         var keys = from keyId in createGame.Keys select new Key { KeyId = keyId, KeyGame = game };
         game.Keys = keys.ToList();
         await GameRepository.Create(game);
-        return RedirectToActionPermanent("GetGame", "Home", new { id = id });
+        var gameDetailedViewModel = DetailedGameViewModel.FromGame(game);
+        return Ok(gameDetailedViewModel);
     }
     [HttpDelete, Route("Delete")]
     public async Task<IActionResult> Delete(Guid id)
@@ -85,6 +75,7 @@ public class GameController : ControllerBase
         game.Developer = updateGame.DeveloperId is not null ? await CompanyRepository.GetById((Guid)updateGame.DeveloperId) : null;
         game.ReleaseDate = updateGame.ReleaseDate.ToDateTime(TimeOnly.MinValue);
         await GameRepository.Update(game);
-        return RedirectToActionPermanent("GetGame", "Home", new { id = updateGame.Id });
+        var gameDetailedViewModel = DetailedGameViewModel.FromGame(game);
+        return Ok(gameDetailedViewModel);
     }
 }

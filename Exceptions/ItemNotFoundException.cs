@@ -4,5 +4,5 @@ namespace GamesStoreWebApi.Exceptions;
 public class ItemNotFoundException : WebApiException
 {
     public ItemNotFoundException()
-        : base("Invalid id", HttpStatusCode.BadRequest) { }
+        : base("Item not found by id.", HttpStatusCode.BadRequest) { }
 }
