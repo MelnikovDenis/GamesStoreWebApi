@@ -1,12 +1,8 @@
 ﻿using System.Net;
 
-namespace GamesStoreWebApi.Exceptions
+namespace GamesStoreWebApi.Exceptions;
+public class InvalidRequestParameterException : WebApiException
 {
-    public class InvalidRequestParameterException : WebApiException
-    {
-        public InvalidRequestParameterException()
-            : base("Invalid request parameter.", HttpStatusCode.BadRequest) { }
-        public InvalidRequestParameterException(string message)
-            : base(message, HttpStatusCode.BadRequest) { }
-    }
+    public InvalidRequestParameterException(string message = "Invalid request parameter.", HttpStatusCode statusCode = HttpStatusCode.BadRequest)
+        : base(message, statusCode) { }
 }

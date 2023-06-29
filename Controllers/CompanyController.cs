@@ -1,13 +1,15 @@
 ﻿using GamesStoreWebApi.Models.Entities;
 using GamesStoreWebApi.Models.Persistence.Abstractions;
 using GamesStoreWebApi.Models.ViewModels.FromView;
+using GamesStoreWebApi.Models.ViewModels.Shared;
 using GamesStoreWebApi.Models.ViewModels.ToView;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace GamesStoreWebApi.Controllers
 {
-    
+
     [ApiController]
     [Route("api/[controller]")]
     public class CompanyController : ControllerBase
@@ -19,7 +21,7 @@ namespace GamesStoreWebApi.Controllers
             GameRepository = gameRepository;
             CompanyRepository = companyRepository;
         }
-        [HttpGet, Route("GetPage")]
+        [HttpGet("GetPage")]
         public async Task<IActionResult> GetPage(int pageSize, int pageNumber = 1)
         {
             var pageInfo = new PageInfoViewModel(await GameRepository.Count(), pageSize, pageNumber);
@@ -35,7 +37,7 @@ namespace GamesStoreWebApi.Controllers
             .ToListAsync();
             return Ok(new GenericPageViewModel<CompanyViewModel>(companies, pageInfo));
         }
-        [HttpGet, Route("GetById")]
+        [HttpGet("GetById")]
         public async Task<IActionResult> GetById(Guid id)
         {
             var company = await CompanyRepository.GetById(id);
@@ -46,7 +48,7 @@ namespace GamesStoreWebApi.Controllers
                 )
             );
         }
-        [HttpPost, Route("Create")]
+        [HttpPost("Create"), Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Create(CreateCompanyViewModel createCompany)
         {
             Guid id = Guid.NewGuid();
@@ -60,7 +62,7 @@ namespace GamesStoreWebApi.Controllers
             var companyViewModel = new CompanyViewModel(company.Id, company.Name, company.Description);
             return Ok(companyViewModel);
         }
-        [HttpDelete, Route("Delete")]
+        [HttpDelete("Delete"), Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var company = await CompanyRepository.GetById(id);
@@ -68,7 +70,7 @@ namespace GamesStoreWebApi.Controllers
             await CompanyRepository.Delete(company);
             return Ok(companyViewModel);
         }
-        [HttpPut, Route("Update")]
+        [HttpPut("Update"), Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Update(CompanyViewModel updateCompany)
         {
             var company = await CompanyRepository.GetById(updateCompany.Id);

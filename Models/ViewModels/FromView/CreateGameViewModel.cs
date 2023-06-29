@@ -1,10 +1,12 @@
-﻿namespace GamesStoreWebApi.Models.ViewModels.FromView;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace GamesStoreWebApi.Models.ViewModels.FromView;
 public record class CreateGameViewModel(
-    string Title,
+    [Required] string Title,
     string? Description,
     Guid? PublisherId,
     Guid? DeveloperId,
-    decimal StartPrice,
-    DateOnly ReleaseDate,
+    [Required, Range(0d, 100000d)] decimal StartPrice,
+    [Required] DateOnly ReleaseDate,
     IEnumerable<Guid>? Keys
 );

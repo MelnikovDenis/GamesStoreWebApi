@@ -1,4 +1,5 @@
 ﻿using GamesStoreWebApi.Models.Entities;
+using GamesStoreWebApi.Models.ViewModels.Shared;
 
 namespace GamesStoreWebApi.Models.ViewModels.ToView;
 public record class DetailedGameViewModel(

@@ -1,3 +1,5 @@
-﻿namespace GamesStoreWebApi.Models.ViewModels.FromView;
+﻿using System.ComponentModel.DataAnnotations;
 
-public record class CreateCompanyViewModel(string Name, string? Description);
+namespace GamesStoreWebApi.Models.ViewModels.FromView;
+
+public record class CreateCompanyViewModel([Required] string Name, string? Description);

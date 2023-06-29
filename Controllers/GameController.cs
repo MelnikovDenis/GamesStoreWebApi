@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using GamesStoreWebApi.Models.Persistence.Abstractions;
 using GamesStoreWebApi.Models.ViewModels.ToView;
 using GamesStoreWebApi.Models.ViewModels.FromView;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GamesStoreWebApi.Controllers;
 
@@ -19,7 +20,7 @@ public class GameController : ControllerBase
         CompanyRepository = companyRepository;
     }
 
-    [HttpGet, Route("GetPage")]
+    [HttpGet("GetPage")]
     public async Task<IActionResult> GetPage(int pageSize, int pageNumber = 1)
     {
         var pageInfo = new PageInfoViewModel(await GameRepository.Count(), pageSize, pageNumber);
@@ -31,13 +32,13 @@ public class GameController : ControllerBase
         .ToListAsync();
         return Ok(new GenericPageViewModel<SuperficialGameViewModel>(games, pageInfo));
     }
-    [HttpGet, Route("GetById")]
+    [HttpGet("GetById")]
     public async Task<IActionResult> GetById(Guid id) 
     {
         var game = await GameRepository.GetById(id);
         return Ok(DetailedGameViewModel.FromGame(game));
     }
-    [HttpPost, Route("Create")]
+    [HttpPost("Create"), Authorize(AuthenticationSchemes = "Bearer")]
     public async Task<IActionResult> Create(CreateGameViewModel createGame)
     {
         Guid id = Guid.NewGuid();
@@ -57,7 +58,7 @@ public class GameController : ControllerBase
         var gameDetailedViewModel = DetailedGameViewModel.FromGame(game);
         return Ok(gameDetailedViewModel);
     }
-    [HttpDelete, Route("Delete")]
+    [HttpDelete("Delete"), Authorize(AuthenticationSchemes = "Bearer")]
     public async Task<IActionResult> Delete(Guid id)
     {
         var game = await GameRepository.GetById(id);
@@ -65,7 +66,7 @@ public class GameController : ControllerBase
         await GameRepository.Delete(game);
         return Ok(gameDetailedViewModel);
     }
-    [HttpPut, Route("Update")]
+    [HttpPut("Update"), Authorize(AuthenticationSchemes = "Bearer")]
     public async Task<IActionResult> Update(UpdateGameViewModel updateGame)
     {
         var game = await GameRepository.GetById(updateGame.Id);

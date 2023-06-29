@@ -13,17 +13,17 @@ public class ApplicationContext : IdentityDbContext<ApplicationUser, IdentityRol
     public DbSet<Price> Prices { get; set; }
     public DbSet<Discount> Discounts { get; set; }
     public DbSet<Collection> Collections { get; set; }
-    public ApplicationContext()
+    public ApplicationContext(DbContextOptions<ApplicationContext> options)
+            : base(options)
     {
-
     }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        var builder = new ConfigurationBuilder();
+        /*var builder = new ConfigurationBuilder();
         builder.SetBasePath(Directory.GetCurrentDirectory());
         builder.AddJsonFile("appsettings.Development.json");
         var config = builder.Build();
-        optionsBuilder.UseSqlServer(config.GetConnectionString("DefaultConnection"));
+        optionsBuilder.UseSqlServer(config.GetConnectionString("DefaultConnection"));*/
         optionsBuilder.LogTo(message => Console.WriteLine(message));
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)

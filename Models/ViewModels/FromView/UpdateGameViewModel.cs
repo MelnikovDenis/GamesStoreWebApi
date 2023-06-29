@@ -1,7 +1,9 @@
-﻿namespace GamesStoreWebApi.Models.ViewModels.FromView;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace GamesStoreWebApi.Models.ViewModels.FromView;
 public record class UpdateGameViewModel(
-    Guid Id,
-    string Title,
+    [Required] Guid Id,
+    [Required] string Title,
     string? Description,
     Guid? PublisherId,
     Guid? DeveloperId,
