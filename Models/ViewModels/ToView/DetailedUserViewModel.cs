@@ -3,5 +3,4 @@ public record class DetailedUserViewModel(
     string Email,
     string Username,
     bool EmailConfirmed
-
     );

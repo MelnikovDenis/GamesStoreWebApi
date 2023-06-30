@@ -7,6 +7,6 @@ public record class CreateGameViewModel(
     Guid? PublisherId,
     Guid? DeveloperId,
     [Required, Range(0d, 100000d)] decimal StartPrice,
-    [Required] DateOnly ReleaseDate,
+    [Required, DataType(DataType.Date)] DateOnly ReleaseDate,
     IEnumerable<Guid>? Keys
 );

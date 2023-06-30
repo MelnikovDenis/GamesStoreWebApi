@@ -1,4 +1,5 @@
-﻿using GamesStoreWebApi.Models.Entities; 
+﻿using GamesStoreWebApi.Models.Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace GamesStoreWebApi.Models.ViewModels.ToView;
 public record class SuperficialGameViewModel(Guid Id,
@@ -6,7 +7,7 @@ public record class SuperficialGameViewModel(Guid Id,
     string? Description,
     string? PublisherName,
     string? DeveloperName,
-    DateOnly ReleaseDate,
+    [DataType(DataType.Date)] DateOnly ReleaseDate,
     decimal CurrentPrice,
     decimal? CurrentDiscount,
     int KeyCount

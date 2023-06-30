@@ -19,17 +19,29 @@ public class ApplicationContext : IdentityDbContext<ApplicationUser, IdentityRol
     }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        /*var builder = new ConfigurationBuilder();
-        builder.SetBasePath(Directory.GetCurrentDirectory());
-        builder.AddJsonFile("appsettings.Development.json");
-        var config = builder.Build();
-        optionsBuilder.UseSqlServer(config.GetConnectionString("DefaultConnection"));*/
         optionsBuilder.LogTo(message => Console.WriteLine(message));
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         //настройка Identity
         base.OnModelCreating(modelBuilder);
+        //заполнение таблицы AspNetRoles начальными данными
+        modelBuilder.Entity<IdentityRole<Guid>>().HasData(
+            new IdentityRole<Guid>
+            {
+                Id = new Guid("cfdedf85-d8fc-4286-a9e8-d77e1a7dae1c"),
+                Name = "User",
+                NormalizedName = "User".Normalize().ToUpperInvariant(),
+                ConcurrencyStamp = "235384a7-be0b-4094-b34c-0b0e9cb15fd3"
+            },
+            new IdentityRole<Guid>
+            {
+                Id = new Guid("7d85b102-0f69-450e-93e8-28192d10aafe"),
+                Name = "Administrator",
+                NormalizedName = "Administrator".Normalize().ToUpperInvariant(),
+                ConcurrencyStamp = "1748c6d1-e1f6-4566-a4f9-269334ac65f3"
+            }
+        );
 
         //настройка значений по умолчанию
         modelBuilder.Entity<Price>().Property(p => p.StartDate).HasDefaultValue(DateTime.UnixEpoch);

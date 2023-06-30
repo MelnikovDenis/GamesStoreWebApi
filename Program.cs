@@ -49,18 +49,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            // указывает, будет ли валидироваться издатель при валидации токена
             ValidateIssuer = true,
-            // строка, представляющая издателя
             ValidIssuer = builder.Configuration.GetSection("JwtSettings:Issuer").Value,
-            // будет ли валидироваться потребитель токена
             ValidateAudience = false,
-            // будет ли валидироваться время существования
             ValidateLifetime = true,
-            // установка ключа безопасности
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
                 .GetBytes(builder.Configuration.GetSection("JwtSettings:TokenKey").Value!)),
-            // валидация ключа безопасности
             ValidateIssuerSigningKey = true
         };
     }

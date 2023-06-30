@@ -1,5 +1,6 @@
 ﻿using GamesStoreWebApi.Models.Entities;
 using GamesStoreWebApi.Models.ViewModels.Shared;
+using System.ComponentModel.DataAnnotations;
 
 namespace GamesStoreWebApi.Models.ViewModels.ToView;
 public record class DetailedGameViewModel(
@@ -8,7 +9,7 @@ public record class DetailedGameViewModel(
         string? Description,
         CompanyViewModel? Publisher,
         CompanyViewModel? Developer,
-        DateOnly ReleaseDate,
+        [DataType(DataType.Date)] DateOnly ReleaseDate,
         IEnumerable<PriceViewModel> PriceHistory,
         IEnumerable<DiscountViewModel>? DiscountHistory,
         int KeyCount

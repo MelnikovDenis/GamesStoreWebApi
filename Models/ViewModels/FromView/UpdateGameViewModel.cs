@@ -7,5 +7,5 @@ public record class UpdateGameViewModel(
     string? Description,
     Guid? PublisherId,
     Guid? DeveloperId,
-    DateOnly ReleaseDate
+    [DataType(DataType.Date)] DateOnly ReleaseDate
 );

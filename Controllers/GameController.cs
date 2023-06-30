@@ -38,7 +38,7 @@ public class GameController : ControllerBase
         var game = await GameRepository.GetById(id);
         return Ok(DetailedGameViewModel.FromGame(game));
     }
-    [HttpPost("Create"), Authorize(AuthenticationSchemes = "Bearer")]
+    [HttpPost("Create"), Authorize(AuthenticationSchemes = "Bearer", Roles = "Administrator")]
     public async Task<IActionResult> Create(CreateGameViewModel createGame)
     {
         Guid id = Guid.NewGuid();
@@ -58,7 +58,7 @@ public class GameController : ControllerBase
         var gameDetailedViewModel = DetailedGameViewModel.FromGame(game);
         return Ok(gameDetailedViewModel);
     }
-    [HttpDelete("Delete"), Authorize(AuthenticationSchemes = "Bearer")]
+    [HttpDelete("Delete"), Authorize(AuthenticationSchemes = "Bearer", Roles = "Administrator")]
     public async Task<IActionResult> Delete(Guid id)
     {
         var game = await GameRepository.GetById(id);
@@ -66,7 +66,7 @@ public class GameController : ControllerBase
         await GameRepository.Delete(game);
         return Ok(gameDetailedViewModel);
     }
-    [HttpPut("Update"), Authorize(AuthenticationSchemes = "Bearer")]
+    [HttpPut("Update"), Authorize(AuthenticationSchemes = "Bearer", Roles = "Administrator")]
     public async Task<IActionResult> Update(UpdateGameViewModel updateGame)
     {
         var game = await GameRepository.GetById(updateGame.Id);

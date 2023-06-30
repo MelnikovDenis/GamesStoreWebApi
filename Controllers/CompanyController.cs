@@ -48,7 +48,7 @@ namespace GamesStoreWebApi.Controllers
                 )
             );
         }
-        [HttpPost("Create"), Authorize(AuthenticationSchemes = "Bearer")]
+        [HttpPost("Create"), Authorize(AuthenticationSchemes = "Bearer", Roles = "Administrator")]
         public async Task<IActionResult> Create(CreateCompanyViewModel createCompany)
         {
             Guid id = Guid.NewGuid();
@@ -62,7 +62,7 @@ namespace GamesStoreWebApi.Controllers
             var companyViewModel = new CompanyViewModel(company.Id, company.Name, company.Description);
             return Ok(companyViewModel);
         }
-        [HttpDelete("Delete"), Authorize(AuthenticationSchemes = "Bearer")]
+        [HttpDelete("Delete"), Authorize(AuthenticationSchemes = "Bearer", Roles = "Administrator")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var company = await CompanyRepository.GetById(id);
@@ -70,7 +70,7 @@ namespace GamesStoreWebApi.Controllers
             await CompanyRepository.Delete(company);
             return Ok(companyViewModel);
         }
-        [HttpPut("Update"), Authorize(AuthenticationSchemes = "Bearer")]
+        [HttpPut("Update"), Authorize(AuthenticationSchemes = "Bearer", Roles = "Administrator")]
         public async Task<IActionResult> Update(CompanyViewModel updateCompany)
         {
             var company = await CompanyRepository.GetById(updateCompany.Id);
