@@ -40,6 +40,25 @@ public class ApplicationContext : IdentityDbContext<ApplicationUser, IdentityRol
                 Name = "Administrator",
                 NormalizedName = "Administrator".Normalize().ToUpperInvariant(),
                 ConcurrencyStamp = "1748c6d1-e1f6-4566-a4f9-269334ac65f3"
+            },
+            new IdentityRole<Guid> 
+            {
+                Id = new Guid("de86b3db-8137-4e9e-b784-b45c3d5080b8"),
+                Name = "Root",
+                NormalizedName = "Root".Normalize().ToUpperInvariant(),
+                ConcurrencyStamp = "180dd38f-8105-477e-bbb9-061f41d9c369"
+            }
+        );
+        modelBuilder.Entity<CollectionType>().HasData(
+            new CollectionType 
+            { 
+                Id = new Guid("3650af9b-3872-47fe-ad5d-111aaa194f6c"),
+                Type = "Wish list"
+            },
+            new CollectionType
+            { 
+                Id = new Guid("3c3b723c-f749-4162-a73f-03cbe163944d"),
+                Type = "Shopping cart"
             }
         );
 

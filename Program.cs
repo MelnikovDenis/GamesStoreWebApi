@@ -21,8 +21,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
     options.User.RequireUniqueEmail = true;
     options.Lockout.AllowedForNewUsers = false;
 }).AddEntityFrameworkStores<ApplicationContext>();
-builder.Services.AddTransient<IGenericRepository<Game>, EfGameRepository>();
-builder.Services.AddTransient<IGenericRepository<Company>, EfCompanyRepository>();
+builder.Services.AddTransient<IUnitOfWork, EfUnitOfWork>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

@@ -4,7 +4,7 @@ public interface IGenericRepository<TEntity> where TEntity : class
     public Task<int> Count();
     public IQueryable<TEntity> Get();
     public Task<TEntity> GetById(Guid id);
-    public Task Create(TEntity entity);
-    public Task Update(TEntity entity);
-    public Task Delete(TEntity entity);
+    public void Create(TEntity entity);
+    public void Update(TEntity entity);
+    public void Delete(TEntity entity);
 }

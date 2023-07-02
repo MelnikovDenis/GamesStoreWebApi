@@ -28,24 +28,20 @@ public class EfCompanyRepository : IGenericRepository<Company>
         var company = await _context.Companies
             .Include(c => c.PublisherGames)
             .Include(c => c.DeveloperGames)
-            .FirstOrDefaultAsync(c => c.Id == id);
-        if (company is null)
-            throw new ItemNotFoundException();
+            .FirstOrDefaultAsync(c => c.Id == id) 
+            ?? throw new ItemNotFoundException();
         return company;
     }
-    public async Task Delete(Company company) 
+    public void Delete(Company company) 
     { 
         _context.Companies.Remove(company);
-        await _context.SaveChangesAsync();
     }
-    public async Task Update(Company company) 
+    public void Update(Company company) 
     { 
         _context.Companies.Update(company);
-        await _context.SaveChangesAsync();
     }
-    public async Task Create(Company company) 
+    public void Create(Company company) 
     {
         _context.Companies.Add(company);
-        await _context.SaveChangesAsync();
     }
 }

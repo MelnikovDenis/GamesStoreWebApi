@@ -16,7 +16,8 @@ namespace GamesStoreWebApi.Controllers;
 [Route("api/[controller]")]
 public class AuthenticationController : Controller
 {
-    private IConfiguration _configuration;
+    private IConfiguration _configuration { get; }
+
     private UserManager<ApplicationUser> _userManager { get; set; }
     public AuthenticationController(IConfiguration configuration, UserManager<ApplicationUser> userManager)
     {
@@ -39,11 +40,10 @@ public class AuthenticationController : Controller
             AccessFailedCount = 0,
             PasswordHash = CreatePasswordHash(createUser.Password)
         };
-        var result = await _userManager.CreateAsync(user);
-       
-        if (result.Succeeded) 
-        {
-            await _userManager.AddToRoleAsync(user, "User");
+        var createUserResult = await _userManager.CreateAsync(user);
+        var giveRoleResult = await _userManager.AddToRoleAsync(user, "User");
+        if (createUserResult.Succeeded && giveRoleResult.Succeeded) 
+        {  
             return Ok(createUser);
         }
         else 

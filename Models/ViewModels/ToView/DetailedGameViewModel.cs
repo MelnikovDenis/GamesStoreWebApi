@@ -35,7 +35,7 @@ public record class DetailedGameViewModel(
             (from discount in game.Discounts
              where (discount.EndDate >= startHistory && discount.StartDate <= Now)
              select new DiscountViewModel(DateOnly.FromDateTime(discount.StartDate), DateOnly.FromDateTime(discount.EndDate), discount.Percent)),
-             (game.Keys != null ? game.Keys.Count : 0)
+             (game.Keys != null ? (from key in game.Keys where key.KeyPurchase == null select key).Count() : 0)
         );
 
     }
