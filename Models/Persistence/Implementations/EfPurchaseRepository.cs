@@ -38,7 +38,11 @@ public class EfPurchaseRepository : IGenericRepository<Purchase>
 
     public async Task<Purchase> GetById(Guid id)
     {
-        var purchase = await _context.Purchases.FirstOrDefaultAsync(p => p.Id == id) 
+        var purchase = await _context.Purchases
+            .Include(p => p.Purchaser)
+            .Include(p => p.Keys)
+            .ThenInclude(k => k.KeyGame)
+            .FirstOrDefaultAsync(p => p.Id == id) 
             ?? throw new ItemNotFoundException();
         return purchase;
     }

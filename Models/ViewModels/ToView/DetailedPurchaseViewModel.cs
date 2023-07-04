@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace GamesStoreWebApi.Models.ViewModels.ToView;
 
 public record class DetailedPurchaseViewModel(
+    Guid Id,
     List<PurchaseGamePriceViewModel> Games, 
     DateTime PurchaseTime, 
     [DataType(DataType.CreditCard)]string BankCard
