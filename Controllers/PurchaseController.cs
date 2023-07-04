@@ -32,7 +32,7 @@ namespace GamesStoreWebApi.Controllers
         {
             //проверяем, что такой пользователь существует
             var user = await _userManager.FindByEmailAsync(this.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)!.Value) 
-                ?? throw new ItemNotFoundException();
+                ?? throw new ItemNotFoundException("Invalud user id.");
             //получаем информацию о количестве покупок пользователя и формируем информацию о пагинации
             var count = await (from purchase in UnitOfWork.PurchaseRepository.Get() where purchase.Purchaser.Id == user.Id select purchase).CountAsync();
             var pageInfo = new PageInfoViewModel(count, pageSize, pageNumber);
@@ -74,7 +74,7 @@ namespace GamesStoreWebApi.Controllers
         {
             //проверяем, что такой пользователь существует
             var user = await _userManager.FindByEmailAsync(this.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)!.Value)
-               ?? throw new ItemNotFoundException();
+               ?? throw new ItemNotFoundException("Invalud user id.");
             //проверяем валидность id и получаем покупку по нему
             var purchase = await UnitOfWork.PurchaseRepository.GetById(id);
             //связываем ключи из покупки с играми (группируем)
@@ -98,14 +98,14 @@ namespace GamesStoreWebApi.Controllers
         {
             //проверка на то, что email указанный в claim валиден
             var user = await _userManager.FindByEmailAsync(this.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)!.Value) 
-                ?? throw new ItemNotFoundException();
+                ?? throw new ItemNotFoundException("Invalud user id.");
 
             //создание объекта покупки
             var id = new Guid();
             var purchase = new Purchase
             {
                 Id = id,
-                BankCard = createPurchase.bankcard,
+                BankCard = createPurchase.Bankcard,
                 PurchaseTime = DateTime.UtcNow,
                 Purchaser = user,
                 Keys = new List<Key>()
@@ -122,7 +122,7 @@ namespace GamesStoreWebApi.Controllers
                 //проверка на то, что свободных ключей в продаже хватит
                 var keyCount = (from key in game.Keys where key.KeyPurchase is not null select key).Count();
                 if (keyCount > createPurchase.GameKeyCountDict[gameGuid])
-                    throw new Exception("Not enough keys to sell.");
+                    throw new WebApiException("Not enough keys to sell.");
 
                 //получение и связывание ключей с покупкой
                 var keys = (from key in game.Keys where key.KeyPurchase == null && key.KeyGame.Id == game.Id select key)
@@ -150,16 +150,58 @@ namespace GamesStoreWebApi.Controllers
         }
 
         
-        /*
-[HttpPut("Update"), Authorize(AuthenticationSchemes = "Bearer", Roles = "Root")]
-public async Task<IActionResult> Update()
-{
-   throw new NotImplementedException();
-}
-[HttpDelete("Delete"), Authorize(AuthenticationSchemes = "Bearer", Roles = "Administrator")]
-public async Task<IActionResult> Delete(Guid id)
-{
-   throw new NotImplementedException();
-}*/
+        
+        [HttpPut("Update"), Authorize(AuthenticationSchemes = "Bearer", Roles = "Root")]
+        public async Task<IActionResult> Update(UpdatePurchaseViewModel updatePurchaseViewModel)
+        {
+            //проверяем, что такой пользователь существует
+            var user = await _userManager.FindByEmailAsync(this.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)!.Value)
+               ?? throw new ItemNotFoundException("Invalud user id.");
+            //проверяем валидность id и получаем покупку по нему
+            var purchase = await UnitOfWork.PurchaseRepository.GetById(updatePurchaseViewModel.Id);
+            //связываем ключи из покупки с играми (группируем)
+            var gameKeys = (from key in purchase.Keys where key.KeyPurchase != null group key by key.KeyGame);
+
+            var games = new List<PurchaseGamePriceViewModel>();
+            //достаём подробную информацию об играх
+            foreach (var gameKey in gameKeys)
+            {
+                var game = await UnitOfWork.GameRepository.GetById(gameKey.Key.Id);
+                games.Add(PurchaseGamePriceViewModel.FromGame(game, gameKey.ToList()));
+            }
+            purchase.BankCard = updatePurchaseViewModel.Bankcard;
+            purchase.PurchaseTime = updatePurchaseViewModel.PurchaseTime;
+            UnitOfWork.PurchaseRepository.Update(purchase);
+            await UnitOfWork.Save();
+            //формируем ViewModel
+            var purchaseViewModel = new DetailedPurchaseViewModel(purchase.Id, games, purchase.PurchaseTime, purchase.BankCard);
+            return Ok(purchaseViewModel);
+        }
+        [HttpDelete("Delete"), Authorize(AuthenticationSchemes = "Bearer", Roles = "Administrator")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            //проверяем, что такой пользователь существует
+            var user = await _userManager.FindByEmailAsync(this.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)!.Value)
+               ?? throw new ItemNotFoundException("Invalud user id.");
+            //проверяем валидность id и получаем покупку по нему
+            var purchase = await UnitOfWork.PurchaseRepository.GetById(id);
+            //связываем ключи из покупки с играми (группируем)
+            var gameKeys = (from key in purchase.Keys where key.KeyPurchase != null group key by key.KeyGame);
+
+            var games = new List<PurchaseGamePriceViewModel>();
+            //достаём подробную информацию об играх
+            foreach (var gameKey in gameKeys)
+            {
+                var game = await UnitOfWork.GameRepository.GetById(gameKey.Key.Id);
+                games.Add(PurchaseGamePriceViewModel.FromGame(game, gameKey.ToList()));
+            }
+            //формируем ViewModel
+            var purchaseViewModel = new DetailedPurchaseViewModel(purchase.Id, games, purchase.PurchaseTime, purchase.BankCard);
+            //удаляем из репозитория
+            UnitOfWork.PurchaseRepository.Delete(purchase);
+            await UnitOfWork.Save();
+            //отправляем ответ
+            return Ok(purchaseViewModel);
+        }
     }
 }

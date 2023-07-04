@@ -29,7 +29,7 @@ public class EfGameRepository : IGenericRepository<Game>
             .ThenInclude(k => k.KeyPurchase)          
             .AsNoTracking()
             .AsQueryable();
-#pragma warning restore CS8620 // Аргумент запрещено использовать для параметра из-за различий в отношении допустимости значений NULL для ссылочных типов.
+
     }
     public async Task<Game> GetById(Guid id) 
     {
@@ -39,12 +39,13 @@ public class EfGameRepository : IGenericRepository<Game>
             .Include(g => g.Prices)
             .Include(g => g.Discounts)
             .Include(g => g.Keys)
+            .ThenInclude(k => k.KeyPurchase)
             .Include(g => g.Collections)
             .FirstOrDefaultAsync(g => g.Id == id) 
             ?? throw new ItemNotFoundException();     
         return game;
     }
-
+#pragma warning restore CS8620 // Аргумент запрещено использовать для параметра из-за различий в отношении допустимости значений NULL для ссылочных типов.
     public void Create(Game game)
     {
         _context.Games.Add(game);
