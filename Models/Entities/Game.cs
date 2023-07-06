@@ -1,10 +1,11 @@
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GamesStoreWebApi.Models.Entities;
 public class Game
 {
-    [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    [Key]
     public Guid Id { get; set; }
     [Required]
     public string Title { get; set; }

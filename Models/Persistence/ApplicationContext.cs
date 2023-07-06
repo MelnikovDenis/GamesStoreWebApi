@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using GamesStoreWebApi.Models.Entities;
 
-namespace GamesStoreWebApi.Models;
+namespace GamesStoreWebApi.Models.Persistence;
 public class ApplicationContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
 {
     public DbSet<Game> Games { get; set; }
@@ -13,6 +13,7 @@ public class ApplicationContext : IdentityDbContext<ApplicationUser, IdentityRol
     public DbSet<Price> Prices { get; set; }
     public DbSet<Discount> Discounts { get; set; }
     public DbSet<Collection> Collections { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
     public ApplicationContext(DbContextOptions<ApplicationContext> options)
             : base(options)
     {
@@ -41,7 +42,7 @@ public class ApplicationContext : IdentityDbContext<ApplicationUser, IdentityRol
                 NormalizedName = "Administrator".Normalize().ToUpperInvariant(),
                 ConcurrencyStamp = "1748c6d1-e1f6-4566-a4f9-269334ac65f3"
             },
-            new IdentityRole<Guid> 
+            new IdentityRole<Guid>
             {
                 Id = new Guid("de86b3db-8137-4e9e-b784-b45c3d5080b8"),
                 Name = "Root",
@@ -50,13 +51,13 @@ public class ApplicationContext : IdentityDbContext<ApplicationUser, IdentityRol
             }
         );
         modelBuilder.Entity<CollectionType>().HasData(
-            new CollectionType 
-            { 
+            new CollectionType
+            {
                 Id = new Guid("3650af9b-3872-47fe-ad5d-111aaa194f6c"),
                 Type = "Wish list"
             },
             new CollectionType
-            { 
+            {
                 Id = new Guid("3c3b723c-f749-4162-a73f-03cbe163944d"),
                 Type = "Shopping cart"
             }
@@ -65,10 +66,11 @@ public class ApplicationContext : IdentityDbContext<ApplicationUser, IdentityRol
         //настройка значений по умолчанию
         modelBuilder.Entity<Price>().Property(p => p.StartDate).HasDefaultValue(DateTime.UnixEpoch);
 
-        //настройка составных первичных ключей
-        modelBuilder.Entity<Price>().HasKey(p => new {p.PricedGameId, p.StartDate});
-        modelBuilder.Entity<Discount>().HasKey(d => new{d.DiscountedGameId, d.StartDate});
-        modelBuilder.Entity<Collection>().HasKey(c => new {c.CollectionedGameId, c.CollectionerId, c.TypeId});
+        //настройка первичных ключей
+        modelBuilder.Entity<Price>().HasKey(p => new { p.PricedGameId, p.StartDate });
+        modelBuilder.Entity<Discount>().HasKey(d => new { d.DiscountedGameId, d.StartDate });
+        modelBuilder.Entity<Collection>().HasKey(c => new { c.CollectionedGameId, c.CollectionerId, c.TypeId });
+        modelBuilder.Entity<RefreshToken>().HasKey(rt => rt.Token);
 
         //настройка альтернативных ключей
         modelBuilder.Entity<CollectionType>().HasAlternateKey(ct => ct.Type);
@@ -84,5 +86,6 @@ public class ApplicationContext : IdentityDbContext<ApplicationUser, IdentityRol
         modelBuilder.Entity<Purchase>().HasOne(p => p.Purchaser).WithMany(u => u.Purchases).HasForeignKey("PurchaserId");
         modelBuilder.Entity<Key>().HasOne(k => k.KeyPurchase).WithMany(p => p.Keys).HasForeignKey("PurchaseId");
         modelBuilder.Entity<Key>().HasOne(k => k.KeyGame).WithMany(g => g.Keys).HasForeignKey("GameId");
+        modelBuilder.Entity<RefreshToken>().HasOne(rt => rt.User).WithMany(g => g.RefreshTokens).HasForeignKey("UserId");
     }
 }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GamesStoreWebApi.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20230630013245_AddDefaultRoles")]
-    partial class AddDefaultRoles
+    [Migration("20230706041554_AddRefreshTokens")]
+    partial class AddRefreshTokens
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -126,6 +126,18 @@ namespace GamesStoreWebApi.Migrations
                     b.HasAlternateKey("Type");
 
                     b.ToTable("CollectionTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("3650af9b-3872-47fe-ad5d-111aaa194f6c"),
+                            Type = "Wish list"
+                        },
+                        new
+                        {
+                            Id = new Guid("3c3b723c-f749-4162-a73f-03cbe163944d"),
+                            Type = "Shopping cart"
+                        });
                 });
 
             modelBuilder.Entity("GamesStoreWebApi.Models.Entities.Company", b =>
@@ -258,6 +270,28 @@ namespace GamesStoreWebApi.Migrations
                     b.ToTable("Purchases");
                 });
 
+            modelBuilder.Entity("GamesStoreWebApi.Models.Entities.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Token")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Expires")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Token");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
                 {
                     b.Property<Guid>("Id")
@@ -299,6 +333,13 @@ namespace GamesStoreWebApi.Migrations
                             ConcurrencyStamp = "1748c6d1-e1f6-4566-a4f9-269334ac65f3",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
+                        },
+                        new
+                        {
+                            Id = new Guid("de86b3db-8137-4e9e-b784-b45c3d5080b8"),
+                            ConcurrencyStamp = "180dd38f-8105-477e-bbb9-061f41d9c369",
+                            Name = "Root",
+                            NormalizedName = "ROOT"
                         });
                 });
 
@@ -497,6 +538,17 @@ namespace GamesStoreWebApi.Migrations
                     b.Navigation("Purchaser");
                 });
 
+            modelBuilder.Entity("GamesStoreWebApi.Models.Entities.RefreshToken", b =>
+                {
+                    b.HasOne("GamesStoreWebApi.Models.Entities.ApplicationUser", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
@@ -553,6 +605,8 @@ namespace GamesStoreWebApi.Migrations
                     b.Navigation("Collections");
 
                     b.Navigation("Purchases");
+
+                    b.Navigation("RefreshTokens");
                 });
 
             modelBuilder.Entity("GamesStoreWebApi.Models.Entities.CollectionType", b =>

@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Identity;
-using GamesStoreWebApi.Models;
 using GamesStoreWebApi.Models.Entities;
 using GamesStoreWebApi.Models.Persistence.Abstractions;
 using GamesStoreWebApi.Models.Persistence.Implementations;
@@ -10,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
+using GamesStoreWebApi.Models.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +21,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
     options.User.RequireUniqueEmail = true;
     options.Lockout.AllowedForNewUsers = false;
 }).AddEntityFrameworkStores<ApplicationContext>();
-builder.Services.AddTransient<IUnitOfWork, EfUnitOfWork>();
+builder.Services.AddScoped<IUnitOfWork, EfUnitOfWork>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

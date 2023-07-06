@@ -5,7 +5,7 @@ namespace GamesStoreWebApi.Models.Entities;
 
 public class Purchase
 {
-    [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    [Key]
     public Guid Id { get; set; }
     [Required]
     public ApplicationUser Purchaser { get; set; }

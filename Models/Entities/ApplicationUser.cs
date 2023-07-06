@@ -5,4 +5,5 @@ public class ApplicationUser : IdentityUser<Guid>
 {
     public List<Collection>? Collections { get; set; }
     public List<Purchase>? Purchases { get; set; }
+    public List<RefreshToken>? RefreshTokens { get; set; }
 }

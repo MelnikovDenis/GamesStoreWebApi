@@ -9,11 +9,13 @@ public class EfUnitOfWork : IUnitOfWork
     public IGenericRepository<Game> GameRepository { get; private set; }
     public IGenericRepository<Company> CompanyRepository { get; private set; }
     public IGenericRepository<Purchase> PurchaseRepository { get; private set; }
+    public IGenericRepository<RefreshToken> RefreshTokenRepository { get; private set; }
     public EfUnitOfWork(ApplicationContext context) 
     {
         GameRepository = new EfGameRepository(context);
         CompanyRepository = new EfCompanyRepository(context);
         PurchaseRepository = new EfPurchaseRepository(context);
+        RefreshTokenRepository = new EfRefreshTokenRepository(context);
         _context = context;
     }
 

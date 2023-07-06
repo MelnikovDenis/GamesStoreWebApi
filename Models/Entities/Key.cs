@@ -5,7 +5,7 @@ namespace GamesStoreWebApi.Models.Entities;
 
 public class Key
 {
-    [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    [Key]
     public Guid KeyId { get; set; }
     [Required]
     public Game KeyGame { get; set; }

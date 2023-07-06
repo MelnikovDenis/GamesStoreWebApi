@@ -5,7 +5,7 @@ namespace GamesStoreWebApi.Models.Entities;
 [Table("CollectionTypes")]
 public class CollectionType
 {
-    [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    [Key]
     public Guid Id { get; set; }
     [Required]
     public string Type { get; set; }
