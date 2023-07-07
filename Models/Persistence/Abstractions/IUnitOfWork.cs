@@ -7,5 +7,6 @@ public interface IUnitOfWork
     public IGenericRepository<Company> CompanyRepository { get; }
     public IGenericRepository<Purchase> PurchaseRepository { get; }
     public IGenericRepository<RefreshToken> RefreshTokenRepository { get; }
+    public IGenericRepository<ApplicationUser> UserRepository { get; }
     public Task Save();
 }

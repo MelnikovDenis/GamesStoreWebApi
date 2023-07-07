@@ -12,6 +12,7 @@ using System.Data;
 using GamesStoreWebApi.Models.Persistence.Implementations;
 using GamesStoreWebApi.Models.Persistence.Abstractions;
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GamesStoreWebApi.Controllers;
 
@@ -71,7 +72,6 @@ public class AuthenticationController : Controller
     [HttpPost("RefreshToken")]
     public async Task<IActionResult> RefreshToken()
     {
-        //удаляем старый RefreshToken, если он существует
         string? refreshTokenStr = null;
         if (Request.Cookies.TryGetValue("RefreshToken", out refreshTokenStr))
         {
@@ -87,6 +87,20 @@ public class AuthenticationController : Controller
             throw new WebApiException("Refresh token expired.", HttpStatusCode.Unauthorized);
 
         return Ok(await CreateAccessToken(refreshToken.User!));
+    }
+    [HttpPost("AllLogout"), Authorize(AuthenticationSchemes = "Bearer", Roles = "User,Administrator,Root")]
+    public async Task<IActionResult> AllLogout() 
+    {
+        //проверяем, что такой пользователь существует
+        var user = await _userManager.FindByEmailAsync(this.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)!.Value)
+            ?? throw new ItemNotFoundException("Invalud user id.");
+        user = await UnitOfWork.UserRepository.GetById(user.Id);
+        foreach(var token in user.RefreshTokens!) 
+        {
+            UnitOfWork.RefreshTokenRepository.Delete(token);
+        }
+        await UnitOfWork.Save();
+        return Ok();
     }
     private string CreatePasswordHash(string password) =>
         BCrypt.Net.BCrypt.EnhancedHashPassword(password + _configuration.GetSection("LocalHashParameter"), HashType.SHA512);

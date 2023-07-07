@@ -14,9 +14,9 @@ public class EfRefreshTokenRepository : IGenericRepository<RefreshToken>
         _context = context;
     }
 
-    public Task<int> Count()
+    public async Task<int> Count()
     {
-        throw new NotImplementedException();
+        return await _context.RefreshTokens.CountAsync();
     }
 
     public void Create(RefreshToken entity)
@@ -31,7 +31,9 @@ public class EfRefreshTokenRepository : IGenericRepository<RefreshToken>
 
     public IQueryable<RefreshToken> Get()
     {
-        throw new NotImplementedException();
+        return _context.RefreshTokens
+            .Include(rt => rt.User)
+            .AsQueryable();
     }
 
     public async Task<RefreshToken> GetById(Guid id)
