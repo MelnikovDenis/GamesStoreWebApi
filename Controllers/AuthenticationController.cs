@@ -61,6 +61,7 @@ public class AuthenticationController : Controller
     public async Task<IActionResult> Login(LoginViewModel userViewModel)
     {
         ApplicationUser? user = await _userManager.FindByEmailAsync(userViewModel.Email); 
+        user = await UnitOfWork.UserRepository.GetById(user!.Id);
         if (user is null || !VerifyPasswordHash(userViewModel.Password, user.PasswordHash!))
             throw new InvalidLoginDataException();
 
@@ -134,8 +135,19 @@ public class AuthenticationController : Controller
         string? oldRefreshTokenStr = null; 
         if(Request.Cookies.TryGetValue("RefreshToken", out oldRefreshTokenStr)) 
         {
-            var oldRefreshToken = await UnitOfWork.RefreshTokenRepository.GetById(new Guid(oldRefreshTokenStr));
-            UnitOfWork.RefreshTokenRepository.Delete(oldRefreshToken);
+            RefreshToken? oldRefreshToken = null;
+            try 
+            {
+                oldRefreshToken = await UnitOfWork.RefreshTokenRepository.GetById(new Guid(oldRefreshTokenStr));
+                UnitOfWork.RefreshTokenRepository.Delete(oldRefreshToken);
+            }
+            catch(ItemNotFoundException) { }           
+        }
+        //удаляем все истёкшие RefreshToken (нужно, чтобы нельзя было заспамить БД токенами)
+        foreach (var token in newRefreshToken.User!.RefreshTokens!)
+        {
+            if (token.Expires < DateTime.UtcNow)
+                UnitOfWork.RefreshTokenRepository.Delete(token);
         }
         //задаём настройки куки (максимальная безопасность, поэтому httpsOnly и Secure)
         var cookieOptions = new CookieOptions

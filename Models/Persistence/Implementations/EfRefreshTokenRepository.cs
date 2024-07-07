@@ -33,6 +33,7 @@ public class EfRefreshTokenRepository : IGenericRepository<RefreshToken>
     {
         return _context.RefreshTokens
             .Include(rt => rt.User)
+            .ThenInclude(u => u.RefreshTokens)
             .AsQueryable();
     }
 
